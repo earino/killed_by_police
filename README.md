@@ -15,9 +15,9 @@ west.
 
 data sets:
 
-*[full cleaned data](data/cleaned.csv)
-*[summary by state](data/summaries_by_state.csv)
-*[summary_by_state_and_race](data/summaries_by_state_and_race.csv)
+* [full cleaned data](data/cleaned.csv)
+* [summary by state](data/summaries_by_state.csv)
+* [summary_by_state_and_race](data/summaries_by_state_and_race.csv)
 
 
 ```r
@@ -65,7 +65,8 @@ data <- killed_by_police %>% html_table(header=TRUE) %>%
     race=as.factor(race),
     first_name=as.factor(capitalize(tolower(first_name))),
     decade=as.factor(age %% 10),
-    state=as.factor(state.name[match(state, state.abb)]))
+    state=as.factor(state.name[match(state, state.abb)]),
+    wday=wday(date))
 ```
 
 ```
@@ -102,7 +103,12 @@ summaries_by_state_and_race <- data %>% group_by(state, race) %>%
          POPEST18PLUS2014) %>% 
   mutate(pctg=(total/POPESTIMATE2014)*100) %>% 
   arrange(state) %>%
-  mutate(region=state.region[match(state.name[state], state.name)])
+  #mutate(region=state.region[match(state.name[state], state.name)]) %>%
+  mutate(state_rank=rank(pctg)) 
+
+summaries_by_state_and_race$state <- tolower(summaries_by_state_and_race$state)
+
+
 
 write.csv(summaries_by_state_and_race, "data/summaries_by_state_and_race.csv", row.names=FALSE)
 
@@ -110,14 +116,34 @@ pctg_map <- summaries_by_state %>%
   inner_join(states_map, by=c("state" = "region")) %>% 
   arrange(group, order)
 
+pctg_race_map <- summaries_by_state_and_race %>%
+  left_join(states_map, by=c("state" = "region")) %>%
+  arrange(group, order)
+
+pctg_race_map <- merge(states_map, summaries_by_state_and_race, by.x="region", by.y="state")
+pctg_race_map <- arrange(pctg_race_map, group, order)
+
 ggplot(pctg_map, aes(x=long, y=lat, group=group, fill=state_rank)) +
   geom_polygon(colour="black") + 
   scale_fill_gradient2(low="#559999", mid="grey90", high="#BB650B", 
                        midpoint=median(pctg_map$state_rank)) + 
-  coord_map("polyconic") + ggtitle("Ranking Percentage of Population Killed by Police by State")
+  coord_map("polyconic") + 
+  ggtitle("Ranking Percentage of Population Killed by Police by State")
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
+```r
+ggplot(pctg_race_map, aes(x=long, y=lat, group=group, fill=pctg)) +
+  geom_polygon(colour="black") + 
+  scale_fill_gradient2(low="#559999", mid="grey90", high="#BB650B", 
+                       midpoint=median(pctg_map$pctg)) + 
+  coord_map("polyconic") + 
+  ggtitle("Ranking Percentage of Population Killed by Police by State") +
+  facet_wrap(~ race)
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-2.png) 
 
 ```r
 data <- data %>% filter(date > ymd("2014/01/01"))
@@ -127,4 +153,11 @@ You can also embed plots, for example:
 
 ![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Note you're most likely to get killed by police on Monday:
+
+
+```r
+ggplot(data, aes(x=as.factor(wday))) + geom_histogram()
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
