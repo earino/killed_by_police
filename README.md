@@ -64,7 +64,7 @@ data <- killed_by_police %>% html_table(header=TRUE) %>%
     gender=as.factor(gender),
     race=as.factor(race),
     first_name=as.factor(capitalize(tolower(first_name))),
-    decade=as.factor(age %% 10),
+    decade=as.factor(age %/% 10),
     state=as.factor(state.name[match(state, state.abb)]),
     wday=wday(date))
 ```
@@ -161,3 +161,14 @@ ggplot(data, aes(x=as.factor(wday))) + geom_histogram()
 ```
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+The probability of being killed by a police officer falls off drastically
+as men age, seems to stay more constant for longer for women (even though there
+is less data, as women are simply killed less often):
+
+
+```r
+ggplot(data[complete.cases(data),], aes(x=age)) + geom_histogram(binwidth=10) + facet_wrap(~ gender, scales="free") + ggtitle("Violence by Police by Gender")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
