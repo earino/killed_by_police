@@ -179,12 +179,12 @@ Boy the south is active year round isn't it
 
 
 ```r
+data$region = state.region[match(state.name[data$state], state.name)]
+
 ggplot(data, aes(x=date)) + geom_histogram(binwidth=2563200, color="black", fill="white") + facet_wrap(~ region) + ggtitle("Deaths by Police Across Time by Region") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-```
-## Error in layout_base(data, vars, drop = drop): At least one layer must contain all variables used for facetting
-```
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 Surprised that police seem to kill the most in may and august:
 
