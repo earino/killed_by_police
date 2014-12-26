@@ -66,7 +66,9 @@ data <- killed_by_police %>% html_table(header=TRUE) %>%
     first_name=as.factor(capitalize(tolower(first_name))),
     decade=as.factor(age %/% 10),
     state=as.factor(state.name[match(state, state.abb)]),
-    wday=wday(date))
+    wday=wday(date),
+    mday=mday(date),
+    month=month(date))
 ```
 
 ```
@@ -183,3 +185,14 @@ ggplot(data, aes(x=date)) + geom_histogram(binwidth=2563200, color="black", fill
 ```
 ## Error in layout_base(data, vars, drop = drop): At least one layer must contain all variables used for facetting
 ```
+
+Surprised that police seem to kill the most in may and august:
+
+
+```r
+ggplot(data[complete.cases(data),] %>% filter(race == "B"), aes(x=as.factor(mday))) + 
+  geom_histogram(fill="white", color="black") + 
+  facet_wrap(~month) + ggtitle("Killed by Month by Day of Month")
+```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
