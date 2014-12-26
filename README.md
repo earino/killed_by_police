@@ -118,11 +118,14 @@ pctg_map <- summaries_by_state %>%
   inner_join(states_map, by=c("state" = "region")) %>% 
   arrange(group, order)
 
+pctg_race_map <- states_map %>% left_join(summaries_by_state_and_race, by=c("region" = "state")) %>%
+  arrange(group, order)
+
 pctg_race_map <- summaries_by_state_and_race %>%
   left_join(states_map, by=c("state" = "region")) %>%
   arrange(group, order)
 
-pctg_race_map <- merge(states_map, summaries_by_state_and_race, by.x="region", by.y="state")
+pctg_race_map <- merge(states_map, summaries_by_state_and_race, by.x="region", by.y="state", all.x=TRUE)
 pctg_race_map <- arrange(pctg_race_map, group, order)
 
 ggplot(pctg_map, aes(x=long, y=lat, group=group, fill=state_rank)) +
@@ -175,7 +178,7 @@ ggplot(data[complete.cases(data),], aes(x=age)) + geom_histogram(binwidth=10) + 
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
-Boy the south is active year round isn't it
+The south is active year round isn't it
 
 
 ```r
@@ -186,13 +189,13 @@ ggplot(data, aes(x=date)) + geom_histogram(binwidth=2563200, color="black", fill
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
-Surprised that police seem to kill the most in may and august:
+Surprised that police interactions peak in may and august:
 
 
 ```r
-ggplot(data[complete.cases(data),] %>% filter(race == "B"), aes(x=as.factor(mday))) + 
+ggplot(data[complete.cases(data),] %>% filter(race == "B" | race == "W" | race == "L"), aes(x=as.factor(mday))) + 
   geom_histogram(fill="white", color="black") + 
-  facet_wrap(~month) + ggtitle("Killed by Month by Day of Month")
+  facet_grid(month~race) + ggtitle("Killed by Month by Day of Month")
 ```
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 

@@ -106,11 +106,14 @@ pctg_map <- summaries_by_state %>%
   inner_join(states_map, by=c("state" = "region")) %>% 
   arrange(group, order)
 
+pctg_race_map <- states_map %>% left_join(summaries_by_state_and_race, by=c("region" = "state")) %>%
+  arrange(group, order)
+
 pctg_race_map <- summaries_by_state_and_race %>%
   left_join(states_map, by=c("state" = "region")) %>%
   arrange(group, order)
 
-pctg_race_map <- merge(states_map, summaries_by_state_and_race, by.x="region", by.y="state")
+pctg_race_map <- merge(states_map, summaries_by_state_and_race, by.x="region", by.y="state", all.x=TRUE)
 pctg_race_map <- arrange(pctg_race_map, group, order)
 
 ggplot(pctg_map, aes(x=long, y=lat, group=group, fill=state_rank)) +
@@ -156,7 +159,7 @@ ggplot(data[complete.cases(data),], aes(x=age)) + geom_histogram(binwidth=10) + 
 
 ```
 
-Boy the south is active year round isn't it
+The south is active year round isn't it
 
 ```{r}
 data$region = state.region[match(state.name[data$state], state.name)]
@@ -164,10 +167,10 @@ data$region = state.region[match(state.name[data$state], state.name)]
 ggplot(data, aes(x=date)) + geom_histogram(binwidth=2563200, color="black", fill="white") + facet_wrap(~ region) + ggtitle("Deaths by Police Across Time by Region") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
-Surprised that police seem to kill the most in may and august:
+Surprised that police interactions peak in may and august:
 
 ```{r}
-ggplot(data[complete.cases(data),] %>% filter(race == "B"), aes(x=as.factor(mday))) + 
+ggplot(data[complete.cases(data),] %>% filter(race == "B" | race == "W" | race == "L"), aes(x=as.factor(mday))) + 
   geom_histogram(fill="white", color="black") + 
-  facet_wrap(~month) + ggtitle("Killed by Month by Day of Month")
+  facet_grid(month~race) + ggtitle("Killed by Month by Day of Month")
 ```
