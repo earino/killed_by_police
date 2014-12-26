@@ -90,7 +90,10 @@ summaries_by_state_and_race <- data %>% group_by(state, race) %>%
          POPEST18PLUS2014) %>% 
   mutate(pctg=(total/POPESTIMATE2014)*100) %>% 
   arrange(state) %>%
-  mutate(region=state.region[match(state.name[state], state.name)])
+  mutate(region=state.region[match(state.name[state], state.name)]) %>%
+  mutate(state_rank=rank(pctg)) 
+
+
 
 write.csv(summaries_by_state_and_race, "data/summaries_by_state_and_race.csv", row.names=FALSE)
 
@@ -98,11 +101,23 @@ pctg_map <- summaries_by_state %>%
   inner_join(states_map, by=c("state" = "region")) %>% 
   arrange(group, order)
 
+pctg_race_map <- summaries_by_state_and_race %>%
+  inner_join(states_map, by=c("state" = "region")) %>%
+  arrange(group, order)
+
 ggplot(pctg_map, aes(x=long, y=lat, group=group, fill=state_rank)) +
   geom_polygon(colour="black") + 
   scale_fill_gradient2(low="#559999", mid="grey90", high="#BB650B", 
                        midpoint=median(pctg_map$state_rank)) + 
-  coord_map("polyconic") + ggtitle("Ranking Percentage of Population Killed by Police by State")
+  coord_map("polyconic") + 
+  ggtitle("Ranking Percentage of Population Killed by Police by State")
+
+ggplot(pctg_race_map %>% filter(race == "W"), aes(x=long, y=lat, group=group, fill=state_rank)) +
+  geom_polygon(colour="black") + 
+  scale_fill_gradient2(low="#559999", mid="grey90", high="#BB650B", 
+                       midpoint=median(pctg_map$state_rank)) + 
+  coord_map("polyconic") + 
+  ggtitle("Ranking Percentage of Population Killed by Police by State")
 
 data <- data %>% filter(date > ymd("2014/01/01"))
 ```
