@@ -1,0 +1,111 @@
+---
+title: "Preliminary Analysis"
+author: "Eduardo Ariño de la Rubia"
+date: "December 25, 2014"
+output: html_document
+---
+
+So this is my first EDA on this new data set, I downloaded the data from
+killedbypolice.net and after some wrangling, I think I've turned it into 
+an actual usable data set. For what yet, I dont' know.
+
+At the end of this knitr document i create some csv files and a graph that
+shows that the north east is way less eager to kill population than the south
+west.
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(lubridate)
+library(Hmisc)
+library(ggplot2)
+library(maps)
+library(rvest)
+
+data(state)
+states_map <- map_data("state")
+```
+
+
+```{r}
+# index.tidy.html was created using http://infohound.net/tidy/ from
+# killedbypolice.net after some small manual editing (mainly deleting
+# stuff that I knew would cause parsing headaches)
+#
+# tidy data/index.html > data/index.tidy.html
+
+columns <- c("date", "state", "gender_race", "name_age", "kbp_link", "news_link")
+killed_by_police <- html("data/index.tidy.html")
+data <- killed_by_police %>% html_table(header=TRUE) %>% 
+  .[[1]] %>%
+  setNames(columns) %>%
+  mutate(#first thing we have to do is split up columns w/multiple values
+    gender=unlist(lapply(strsplit(as.character(gender_race), "\\/"), "[", 1)), 
+    race=unlist(lapply(strsplit(as.character(gender_race), "\\/"), "[", 2)),
+    name=unlist(lapply(strsplit(as.character(name_age), "\\,"), "[", 1)),
+    age=unlist(lapply(strsplit(as.character(name_age), "\\, "), "[", 2)),
+    first_name=unlist(lapply(strsplit(as.character(name), " "), "[", 1)),
+    #throw out some cruft from some strings
+    gender=substr(gender, 1, 1),
+    race=substr(race, 1, 1),
+    date=gsub("\\([^)]+) ", "", date),
+    #make a real date object
+    date=mdy(date),
+    age=as.numeric(substr(age, 1, 2)),#centegenerians will be turned into teens
+    gender=as.factor(gender),
+    race=as.factor(race),
+    first_name=as.factor(capitalize(tolower(first_name))),
+    decade=as.factor(age %% 10),
+    state=as.factor(state.name[match(state, state.abb)]))
+
+write.csv(data, "data/cleaned.csv", row.names=FALSE)
+
+state_population <- read.csv("data/state_population.csv") %>%
+  filter(NAME %in% state.name)
+
+summaries_by_state <- data %>% group_by(state) %>% 
+  summarise(total=n(), 
+            mean_age=round(mean(age, na.rm=TRUE))) %>% 
+  inner_join(state_population, by=c("state" = "NAME")) %>% 
+  select(state, mean_age, total, POPESTIMATE2014, 
+         POPEST18PLUS2014) %>% 
+  mutate(pctg=(total/POPESTIMATE2014)*100) %>% 
+  arrange(state) %>%
+  mutate(state=tolower(state)) %>% mutate(state_rank=rank(pctg))
+
+write.csv(summaries_by_state, "data/summaries_by_state.csv", row.names=FALSE)
+
+summaries_by_state_and_race <- data %>% group_by(state, race) %>% 
+  summarise(total=n(), 
+            mean_age=round(mean(age, na.rm=TRUE))) %>% 
+  inner_join(state_population, by=c("state" = "NAME")) %>% 
+  select(state, race, mean_age, total, POPESTIMATE2014, 
+         POPEST18PLUS2014) %>% 
+  mutate(pctg=(total/POPESTIMATE2014)*100) %>% 
+  arrange(state) %>%
+  mutate(region=state.region[match(state.name[state], state.name)])
+
+write.csv(summaries_by_state_and_race, "data/summaries_by_state_and_race.csv", row.names=FALSE)
+
+pctg_map <- summaries_by_state %>% 
+  inner_join(states_map, by=c("state" = "region")) %>% 
+  arrange(group, order)
+
+ggplot(pctg_map, aes(x=long, y=lat, group=group, fill=state_rank)) +
+  geom_polygon(colour="black") + 
+  scale_fill_gradient2(low="#559999", mid="grey90", high="#BB650B", 
+                       midpoint=median(pctg_map$state_rank)) + 
+  coord_map("polyconic") + ggtitle("Ranking Percentage of Population Killed by Police by State")
+
+
+data <- data %>% filter(date > ymd("2014/01/01"))
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+ggplot(data, aes(x=date)) + geom_density() + facet_wrap(~ race)
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
