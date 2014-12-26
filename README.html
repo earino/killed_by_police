@@ -209,6 +209,12 @@ an actual usable data set. For what yet, I dont&#39; know.</p>
 shows that the north east is way less eager to kill population than the south
 west.</p>
 
+<p>data sets:</p>
+
+<p>*<a href="data/cleaned.csv">full cleaned data</a>
+*<a href="data/summaries_by_state.csv">summary by state</a>
+*<a href="data/summaries_by_state_and_race.csv">summary_by_state_and_race</a></p>
+
 <pre><code class="r">library(tidyr)
 library(dplyr)
 library(lubridate)
@@ -216,6 +222,7 @@ library(Hmisc)
 library(ggplot2)
 library(maps)
 library(rvest)
+library(httr)
 
 data(state)
 states_map &lt;- map_data(&quot;state&quot;)
@@ -229,12 +236,7 @@ states_map &lt;- map_data(&quot;state&quot;)
 
 columns &lt;- c(&quot;date&quot;, &quot;state&quot;, &quot;gender_race&quot;, &quot;name_age&quot;, &quot;kbp_link&quot;, &quot;news_link&quot;)
 killed_by_police &lt;- html(&quot;data/index.tidy.html&quot;)
-</code></pre>
-
-<pre><code>## Error in object[, i]: incorrect number of dimensions
-</code></pre>
-
-<pre><code class="r">data &lt;- killed_by_police %&gt;% html_table(header=TRUE) %&gt;% 
+data &lt;- killed_by_police %&gt;% html_table(header=TRUE) %&gt;% 
   .[[1]] %&gt;%
   setNames(columns) %&gt;%
   mutate(#first thing we have to do is split up columns w/multiple values

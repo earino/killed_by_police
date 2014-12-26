@@ -1,2 +1,6 @@
+.domino
 packrat/lib*/
 .Rproj.user
+domino*
+.noLock
+.dominoignore

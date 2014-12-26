@@ -13,6 +13,12 @@ At the end of this knitr document i create some csv files and a graph that
 shows that the north east is way less eager to kill population than the south
 west.
 
+data sets:
+
+*[full cleaned data](data/cleaned.csv)
+*[summary by state](data/summaries_by_state.csv)
+*[summary_by_state_and_race](data/summaries_by_state_and_race.csv)
+
 
 ```r
 library(tidyr)
@@ -22,6 +28,7 @@ library(Hmisc)
 library(ggplot2)
 library(maps)
 library(rvest)
+library(httr)
 
 data(state)
 states_map <- map_data("state")
@@ -38,13 +45,6 @@ states_map <- map_data("state")
 
 columns <- c("date", "state", "gender_race", "name_age", "kbp_link", "news_link")
 killed_by_police <- html("data/index.tidy.html")
-```
-
-```
-## Error in object[, i]: incorrect number of dimensions
-```
-
-```r
 data <- killed_by_police %>% html_table(header=TRUE) %>% 
   .[[1]] %>%
   setNames(columns) %>%
