@@ -218,6 +218,16 @@ Source: CRAN
 Version: 0.4.1-1
 Hash: 5716097644904b9c1b4be2692de16005
 
+Package: plotly
+Source: github
+Version: 0.5.15
+Hash: 5076e1e416caacc8036d30c2e2809c15126ebbc2
+Requires: ggplot2, knitr, RCurl, RJSONIO
+GithubRepo: plotly
+GithubUsername: ropensci
+GithubRef: master
+GithubSha1: 5076e1e416caacc8036d30c2e2809c15126ebbc2
+
 Package: plyr
 Source: CRAN
 Version: 1.8.1

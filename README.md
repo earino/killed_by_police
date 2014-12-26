@@ -172,3 +172,14 @@ ggplot(data[complete.cases(data),], aes(x=age)) + geom_histogram(binwidth=10) + 
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
+Boy the south is active year round isn't it
+
+
+```r
+ggplot(data, aes(x=date)) + geom_histogram(binwidth=2563200, color="black", fill="white") + facet_wrap(~ region) + ggtitle("Deaths by Police Across Time by Region") + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+```
+## Error in layout_base(data, vars, drop = drop): At least one layer must contain all variables used for facetting
+```
