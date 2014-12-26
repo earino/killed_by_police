@@ -97,7 +97,6 @@ ggplot(pctg_map, aes(x=long, y=lat, group=group, fill=state_rank)) +
                        midpoint=median(pctg_map$state_rank)) + 
   coord_map("polyconic") + ggtitle("Ranking Percentage of Population Killed by Police by State")
 
-
 data <- data %>% filter(date > ymd("2014/01/01"))
 ```
 
