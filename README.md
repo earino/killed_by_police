@@ -22,14 +22,80 @@ data sets:
 
 ```r
 library(tidyr)
+```
+
+```
+## Warning: package 'tidyr' was built under R version 3.1.2
+```
+
+```r
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(lubridate)
 library(Hmisc)
+```
+
+```
+## Warning: package 'Hmisc' was built under R version 3.1.2
+```
+
+```
+## Loading required package: grid
+## Loading required package: lattice
+## Loading required package: survival
+## Loading required package: splines
+## Loading required package: Formula
+## 
+## Attaching package: 'Hmisc'
+## 
+## The following objects are masked from 'package:dplyr':
+## 
+##     src, summarize
+## 
+## The following objects are masked from 'package:base':
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units
+```
+
+```r
 library(ggplot2)
 library(maps)
 library(rvest)
-library(httr)
+```
 
+```
+## 
+## Attaching package: 'rvest'
+## 
+## The following object is masked from 'package:Hmisc':
+## 
+##     html
+```
+
+```r
+library(httr)
+```
+
+```
+## Warning: package 'httr' was built under R version 3.1.2
+```
+
+```r
 data(state)
 states_map <- map_data("state")
 ```

@@ -218,15 +218,70 @@ west.</p>
 </ul>
 
 <pre><code class="r">library(tidyr)
-library(dplyr)
-library(lubridate)
+</code></pre>
+
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.1.2
+</code></pre>
+
+<pre><code class="r">library(dplyr)
+</code></pre>
+
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;
+## 
+## The following object is masked from &#39;package:stats&#39;:
+## 
+##     filter
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union
+</code></pre>
+
+<pre><code class="r">library(lubridate)
 library(Hmisc)
-library(ggplot2)
+</code></pre>
+
+<pre><code>## Warning: package &#39;Hmisc&#39; was built under R version 3.1.2
+</code></pre>
+
+<pre><code>## Loading required package: grid
+## Loading required package: lattice
+## Loading required package: survival
+## Loading required package: splines
+## Loading required package: Formula
+## 
+## Attaching package: &#39;Hmisc&#39;
+## 
+## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     src, summarize
+## 
+## The following objects are masked from &#39;package:base&#39;:
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units
+</code></pre>
+
+<pre><code class="r">library(ggplot2)
 library(maps)
 library(rvest)
-library(httr)
+</code></pre>
 
-data(state)
+<pre><code>## 
+## Attaching package: &#39;rvest&#39;
+## 
+## The following object is masked from &#39;package:Hmisc&#39;:
+## 
+##     html
+</code></pre>
+
+<pre><code class="r">library(httr)
+</code></pre>
+
+<pre><code>## Warning: package &#39;httr&#39; was built under R version 3.1.2
+</code></pre>
+
+<pre><code class="r">data(state)
 states_map &lt;- map_data(&quot;state&quot;)
 </code></pre>
 
