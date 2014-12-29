@@ -4,3 +4,4 @@ packrat/lib*/
 domino*
 .noLock
 .dominoignore
+.Rhistory
